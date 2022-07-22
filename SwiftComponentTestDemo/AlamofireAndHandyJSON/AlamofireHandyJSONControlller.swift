@@ -125,5 +125,25 @@ class AlamofireHandyJSONControlller: UIViewController {
             }
         }
     }
-
+    
+    
+    //这里测试一下网络环境
+    let networkManager = NetworkReachabilityManager(host: "www.yahibo.top")
+    func testNetworkManager() {
+        self.networkManager!.startListening(onQueue: DispatchQueue.global(), onUpdatePerforming: { status in
+            var message = ""
+            switch status {
+            case .unknown:
+                message = "未知网络"
+            case .notReachable:
+                message = "无法连接网络"
+            case .reachable(.cellular):
+                message = "蜂窝移动网络"
+            case .reachable(.ethernetOrWiFi):
+                message = "WIFI或有线网络"
+            }
+            print("***********\(message)*********")
+        })
+    }
+    
 }

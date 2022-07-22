@@ -92,4 +92,26 @@ class AFNetwork {
 //            }
 //        }, to: url, usingThreshold: encodingMemoryThreshold, method: .post, headers: headers, interceptor: interceptor, fileManager: fileManager, requestModifier: nil)
     }
+    
+    
+    //安全验证，设置session，校验规则
+    //可以将默认的AF调用换成这个可以设置成单例
+    fileprivate func TrustSession() -> Session{
+        let policies: [String: ServerTrustEvaluating] = [
+            //没有本地项目证书校验，默认服务器信任评估，同时从默认主机列表证书进行校验，不校验证书是否已经失效
+            "www.baidu1.com": DefaultTrustEvaluator(),
+            
+            //没有本地项目证书校验，检查本地证书的状态，以确保是否失效，这样做会增加开销
+            "www.baidu2.com": RevocationTrustEvaluator(),
+            
+            //默认,校验本地项目bundle所有证书，可以设置固定证书，第一个参数
+            "www.baidu3.com": PinnedCertificatesTrustEvaluator(),
+            
+            //默认校验本地项目所有证书的公钥，验证合适即可
+            "www.baidu4.com": PublicKeysTrustEvaluator()
+       ]
+        let manager = ServerTrustManager(evaluators: policies)
+        let session = Session(serverTrustManager: manager)
+        return session
+    }
 }
