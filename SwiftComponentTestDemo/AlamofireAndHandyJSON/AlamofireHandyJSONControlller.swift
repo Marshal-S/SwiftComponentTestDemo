@@ -112,7 +112,7 @@ class AlamofireHandyJSONControlller: UIViewController {
     }
     
     func testHandyJson() {
-        AF.request("http://onapp.yahibo.top/public/?s=api/test/list", method: .post).responseString { res in
+        let datatask = AF.request("http://onapp.yahibo.top/public/?s=api/test/list", method: .post).responseString { res in
             switch res.result {
                 
             case .failure(let error):
@@ -124,6 +124,8 @@ class AlamofireHandyJSONControlller: UIViewController {
                 print("result", model ?? "")
             }
         }
+        //AF.requestTaskMap 我们的 task在这里，如果很多网络任务有需要取消的话，可以走这里
+        datatask.cancel()
     }
     
     

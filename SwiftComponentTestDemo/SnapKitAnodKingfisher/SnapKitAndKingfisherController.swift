@@ -23,7 +23,9 @@ class SnapKitAndKingfisherController: UIViewController {
     
     func testSnapKit() {
         let bkg = UIView()
-        bkg.backgroundColor = UIColor.red
+        bkg.backgroundColor = UIColor(named: "theme_color")
+        
+        
         self.view.addSubview(bkg)
         bkg.snp.makeConstraints { make in
             make.left.equalTo(self.view).offset(15)
