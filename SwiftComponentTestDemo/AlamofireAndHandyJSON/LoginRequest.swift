@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import HandyJSON
 
 class Request {
     
@@ -19,16 +20,23 @@ class Request {
     ///   - failureBlock: 失败回调
     static func login(username: String,
                       password: String,
-                      successBlock: @escaping ()->Void,
+                      successBlock: @escaping (_ model: ResponseList)->Void,
                       failureBlock: @escaping ()->Void) {
         let paramters = [
             "username": username,
             "password": password
         ]
-        AFNetwork.post("https://www.baidu.com", parameters: paramters).response { res in
-            print(res)
-            successBlock()
-            failureBlock()
+        AFNetwork.post("https://www.baidu.com", parameters: paramters).responseDecodable {(res: AFDataResponse<ResponseList>) in
+            switch res.result {
+                case .failure(let error):
+                    print("失败了", error)
+                    failureBlock()
+                case .success(let model):
+                    print("model", model)
+                    if (model.status == 200) {
+                        successBlock(model)
+                    }
+            }
         }
     }
     
@@ -39,12 +47,21 @@ class Request {
     ///   - successBlock: 成功回调
     ///   - failureBlock: 失败回调
     static func login(loginInfo: LoginModel,
-                      successBlock: @escaping ()->Void,
+                      successBlock: @escaping (_ model: ListPageModel?)->Void,
                       failureBlock: @escaping ()->Void) {
-        AFNetwork.post("https://www.baidu.com", body: loginInfo).response { res in
-            print(res)
-            successBlock()
-            failureBlock()
+        AFNetwork.post("https://www.baidu.com", body: loginInfo).responseString { res in
+            switch res.result {
+            case .failure(let error):
+                print("失败了", error)
+                failureBlock()
+            case .success(let json):
+                //生成结果
+                let model = JSONDeserializer<APIResponse<ListPageModel>>.deserializeFrom(json: json)
+                if (model?.status == 200) {
+                    successBlock(model?.data)
+                }
+                print("result", model ?? "")
+            }
         }
     }
 }
