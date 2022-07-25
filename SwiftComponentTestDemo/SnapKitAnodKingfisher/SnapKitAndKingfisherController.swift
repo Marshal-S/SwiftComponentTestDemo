@@ -18,7 +18,9 @@ class SnapKitAndKingfisherController: UIViewController {
 
         // Do any additional setup after loading the view.
         self.testSnapKit()
+        
         self.testKingfisher()
+//        self.testDownLoader()
     }
     
     func testSnapKit() {
@@ -89,5 +91,20 @@ class SnapKitAndKingfisherController: UIViewController {
         }
         //设置指示器
         self.ivHeader.kf.indicatorType = .activity //.none没有
+    }
+    
+    //手动控制加载时机
+    func testDownLoader() {
+        let url = URL(string: "https://pic.leetcode-cn.com/1654836514-AIOwwN-1627640862-HgXcTO-Frame%201444.jpeg?x-oss-process=image%2Fformat%2Cwebp")
+        //如果有大图加载优化等需求，或者其他根据其他情况自行处理下载的图片，可以走downLoad
+        //也有options和其他逻辑，可以根据需要使用
+        ImageDownloader.default.downloadImage(with: url!) { [weak self]result in
+            switch result {
+            case .success(let value):
+                self?.ivHeader.image = value.image
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
